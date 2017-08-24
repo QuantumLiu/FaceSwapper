@@ -1,6 +1,7 @@
 Created on Fri Aug  4 15:10:26 2017
 
 @author: Quantum Liu 天清
+https://github.com/QuantumLiu/FaceSwapper
 reference :https://github.com/matthewearl/faceswap
 
 说明：

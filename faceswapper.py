@@ -3,6 +3,8 @@
 Created on Fri Aug  4 15:10:26 2017
 
 @author: Quantum Liu
+
+reference:https://github.com/matthewearl/faceswap
 """
 
 
@@ -74,7 +76,7 @@ class Faceswapper():
         '''
         根据head_list添加更多头像资源
         '''
-        self.heads=dict(self.heads,**{os.path.split(name)[-1]:(self.read_and_mark(name)) for name in heads_list})
+        self.heads.update({os.path.split(name)[-1]:(self.read_and_mark(name)) for name in heads_list})
 
     def get_landmarks(self,im,fname,n=1):
         '''
@@ -98,7 +100,10 @@ class Faceswapper():
         '''
         读取图片
         '''
-        im = cv2.imread(fname, cv2.IMREAD_COLOR)
+# =============================================================================
+#         im = cv2.imread(fname, cv2.IMREAD_COLOR)
+# =============================================================================
+        im = cv2.imdecode(np.fromfile(fname,dtype=np.uint8),-1)
         if type(im)==type(None):
             print(fname)
             raise ValueError('Opencv read image {} error, got None'.format(fname))
@@ -154,6 +159,7 @@ class Faceswapper():
     
         is minimized.
         计算仿射矩阵
+        参考：https://github.com/matthewearl/faceswap/blob/master/faceswap.py
         """
         # Solve the procrustes problem by subtracting centroids, scaling by the
         # standard deviation, and then using the SVD to calculate the rotation. See
@@ -239,12 +245,15 @@ class Faceswapper():
         '''
         保存图片
         '''
-        cv2.imwrite(output_path, output_im)
+        cv2.imencode('.jpg',output_im)[1].tofile(output_path)
+# =============================================================================
+#         cv2.imwrite(os.path.abspath(output_path.encode('utf-8').decode('gbk')), output_im)
+# =============================================================================
 
 if __name__=='__main__':
     '''
     命令行运行：
-    python release.py [头路径] [脸路径] [输出图片路径](可选，默认./output.jpg)
+    python faceswapper.py <头路径> <脸路径> <输出图片路径>(可选，默认./output.jpg)
     '''
     head,face_path,out=sys.argv[1],sys.argv[2],(sys.argv[3] if len(sys.argv)>=4 else 'output.jpg')
     swapper=Faceswapper([head])
